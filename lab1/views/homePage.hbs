@@ -7,5 +7,10 @@
 </head>
 <body>
     {{> menu}}
+    {{#each activities}}
+        <div>
+            <a href="/?{{this.id}}"></a>
+        </div>
+    {{/each}}
 </body>
 </html>
