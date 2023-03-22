@@ -7,7 +7,34 @@
 </head>
 <body>
     {{> menu}}
-    <span class="text-black">{{title}}</span>
+    <div class="container-fluid mt-5">
+        <form method="post">
 
+            <input hidden name="id" value="{{activity.id}}">
+
+            <div class="form-group">
+                <label for="title">Заголовок:</label>
+                <input class="form-control" name="name" value="{{activity.name}}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Описание активности:</label>
+                <textarea class="form-control" name="content" placeholder="Описание активности..">{{activity.description}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Дата начала:</label><br>
+                <input type="date" name="startDate" value="{{activity.startDate}}">
+            </div>
+
+            <div class="form-group">
+                <label for="project">Проект:</label>
+                <input class="form-control" name="project" value="{{activity.project}}">
+            </div>
+            <div class="panel-body">
+                <button class="btn btn-success" type="submit" formaction="/saveActivity">Сохранить</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

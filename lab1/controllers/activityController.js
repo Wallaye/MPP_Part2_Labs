@@ -6,7 +6,7 @@ function GetActivityById(activityId){
     let content = fs.readFileSync(activitiesFile, "utf8");
     let activities = JSON.parse(content);
     for (let activity of activities){
-        if (activity.id === activityId){
+        if (activity.id == activityId){
             return activity;
         }
     }
@@ -29,6 +29,10 @@ function GetActivities(){
         activities = [];
     }
     return activities;
+}
+
+export const GetAct = () => {
+    return GetActivities();
 }
 
 function RewriteActivities(activities) {

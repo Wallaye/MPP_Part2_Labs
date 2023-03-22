@@ -85,7 +85,7 @@ export const deleteProject = (req, res) => {
     let projects = GetProjects();
     let index = -1;
 
-    for(var i = 0; i < notes.length; i++) {
+    for(let i = 0; i < notes.length; i++) {
         if(projects[i].id == id){
             index = i;
             break;
