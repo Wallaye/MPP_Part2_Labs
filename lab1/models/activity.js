@@ -2,6 +2,7 @@ class Activity{
     activityId
     name
     description
-    StartDate
+    startDate
+    finishDate
     Time
 }

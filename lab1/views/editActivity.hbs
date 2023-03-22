@@ -24,16 +24,31 @@
 
             <div class="form-group">
                 <label for="date">Дата и время начала:</label><br>
-                <input type="datetime-local" name="startDate" value="{{activity.startDate}}">
+
+                <input type="datetime-local" name="startDate"
+                       {{#if activity.id}}
+
+                       {{/if}}value="{{activity.startDate}}">
             </div>
+
+            <div class="form-group">
+                <label for="date">Дата и время окончания:</label><br>
+                <input type="datetime-local" name="finishDate" value="{{activity.finishDate}}">
+            </div>
+
 
             <div class="form-group">
                 <label for="project">Проект:</label>
                 <input class="form-control" name="project" value="{{activity.project}}">
             </div>
-            <div class="panel-body">
-                <button class="btn btn-success" type="submit" formaction="/saveActivity">Сохранить</button>
-            </div>
+            {{#if checkDate startDate finishDate}}
+                <div class="panel-body">
+                    <button class="btn btn-success" type="submit" formaction="/saveActivity">Сохранить</button>
+                </div>
+            {{else}}
+
+            {{/if}}
+
         </form>
     </div>
 </body>
