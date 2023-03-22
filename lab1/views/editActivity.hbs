@@ -7,7 +7,16 @@
 </head>
 <body>
     {{> menu}}
-    <div class="container-fluid mt-5">
+
+        {{#unless isNew}}
+            <div class="d-flex justify-content-center mt-3">
+                <form method="get">
+                    <input hidden name="id" value="{{activity.id}}">
+                    <button class="btn btn-danger" type="submit" formaction="/deleteActivity">Удалить</button>
+                </form>
+            </div>
+        {{/unless}}
+    <div class="container-fluid mt-3">
         <form method="post">
 
             <input hidden name="id" value="{{activity.id}}">
@@ -24,31 +33,27 @@
 
             <div class="form-group">
                 <label for="date">Дата и время начала:</label><br>
-
-                <input type="datetime-local" name="startDate"
-                       {{#if activity.id}}
-
-                       {{/if}}value="{{activity.startDate}}">
+                <input type="datetime-local" name="startDate" value="{{parseMsToDate activity.startDate}}">
             </div>
 
-            <div class="form-group">
-                <label for="date">Дата и время окончания:</label><br>
-                <input type="datetime-local" name="finishDate" value="{{activity.finishDate}}">
+            <div class="panel-body">
+                {{#unless activity.isActive}}
+                    {{> projectInput}}
+                    <button class="btn btn-outline-primary" type="submit" formaction="/startActivity">Запустить</button>
+                {{else}}
+                    {{#unless activity.isFinished}}
+                        {{> projectInput}}
+                        <button class="btn btn-outline-primary" type="submit" formaction="/stopActivity">Завершить</button>
+                    {{else}}
+                        <div class="form-group">
+                            <label for="date">Дата и время окончания:</label><br>
+                            <input type="datetime-local" name="finishDate" value="{{parseMsToDate activity.finishDate}}">
+                        </div>
+                        {{> projectInput}}
+                        <button class="btn btn-success" type="submit" formaction="/saveActivity">Сохранить</button>
+                    {{/unless}}
+                {{/unless}}
             </div>
-
-
-            <div class="form-group">
-                <label for="project">Проект:</label>
-                <input class="form-control" name="project" value="{{activity.project}}">
-            </div>
-            {{#if checkDate startDate finishDate}}
-                <div class="panel-body">
-                    <button class="btn btn-success" type="submit" formaction="/saveActivity">Сохранить</button>
-                </div>
-            {{else}}
-
-            {{/if}}
-
         </form>
     </div>
 </body>

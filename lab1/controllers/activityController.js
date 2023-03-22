@@ -45,17 +45,20 @@ export const newActivity = (req, res) => {
         id: -1,
         name: "",
         description: "",
-        project: -1,
+        project: "",
         startDate: Date.now(),
-        time: -1
+        timeActive: -1,
+        isFinished: false
     }
     res.render("editActivity.hbs", {
         title: activity.name,
+        isNew: true,
         activity: activity
     })
 }
 
 export const saveActivity = (req, res) => {
+    console.log(req.body)
     if (!req.body) res.sendStatus(400).send();
 
     let activities = GetActivities();
@@ -63,11 +66,12 @@ export const saveActivity = (req, res) => {
         id: req.body.id,
         name: req.body.name,
         description: req.body.description,
-        project: -1,
+        project: req.body.project,
         startDate: req.body.startDate,
-        time: -1
+        finishDate: req.body.finishDate,
+        isActive: true,
+        isFinished: true
     }
-    console.log(activity)
     if (activity.id == -1){
         let maxId = Math.max.apply(Math, activities.map(function(o) {
             return o.id;
@@ -82,14 +86,20 @@ export const saveActivity = (req, res) => {
             if (activities[i].id == activity.id){
                 activities[i].name = activity.name;
                 activities[i].description = activity.description;
-                activities[i].startDate = activity.startDate;
-                activities[i].time = activity.time;
+                if (activity.finishDate > activity.startDate){
+                    activities[i].startDate = Date.parse(activity.startDate);
+                    activities[i].finishDate = Date.parse(activity.finishDate);
+                }
+                activities[i].isActive = true;
+                activities[i].project = activity.project;
+                activities[i].isFinished = true;
             }
         }
     }
     RewriteActivities(activities);
     res.redirect("/editActivity?id=" + activity.id);
 }
+
 
 export const deleteActivity = (req, res) => {
     let id = req.query.id;
@@ -118,7 +128,6 @@ export const saveActivities = (activities) => {
 
 export const editActivity = (req, res) => {
     let activity = GetActivityById(req.query.id);
-    console.log("editing " + activity)
     if (activity != null) {
         res.render("editActivity.hbs", {
             title: activity.name,
@@ -127,4 +136,84 @@ export const editActivity = (req, res) => {
     } else {
         res.status(404).send();
     }
+}
+
+export const startActivity = (req, res) =>{
+    if (!req.body) res.sendStatus(400).send();
+
+    let activities = GetActivities();
+    let activity = {
+        id: req.body.id,
+        name: req.body.name,
+        description: req.body.description,
+        project: req.body.project,
+        startDate: req.body.startDate,
+        finishDate: 0,
+        isActive: true,
+        isFinished: false
+    }
+    console.log(activity)
+    if (activity.id == -1){
+        let maxId = Math.max.apply(Math, activities.map(function(o) {
+            return o.id;
+        }));
+        if (Math.abs(maxId) === Infinity) {
+            maxId = 0;
+        }
+        activity.id = maxId + 1;
+        activities.push(activity);
+    } else {
+        for (let i = 0; i < activities.length; i++){
+            if (activities[i].id == activity.id){
+                activities[i].name = activity.name;
+                activities[i].description = activity.description;
+                activities[i].startDate = Date.parse(activity.startDate);
+                activities[i].isActive = true;
+                activities[i].project = activity.project;
+                activities[i].isFinished = false;
+            }
+        }
+    }
+    RewriteActivities(activities);
+    res.redirect("/editActivity?id=" + activity.id);
+}
+
+export const finishActivity = (req, res) => {
+    if (!req.body) res.sendStatus(400).send();
+
+    let activities = GetActivities();
+    let activity = {
+        id: req.body.id,
+        name: req.body.name,
+        description: req.body.description,
+        project: req.body.project,
+        startDate: req.body.startDate,
+        finishDate: req.body.finishDate,
+        isActive: true,
+        isFinished: false
+    }
+    if (activity.id == -1){
+        let maxId = Math.max.apply(Math, activities.map(function(o) {
+            return o.id;
+        }));
+        if (Math.abs(maxId) === Infinity) {
+            maxId = 0;
+        }
+        activity.id = maxId + 1;
+        activities.push(activity);
+    } else {
+        for (let i = 0; i < activities.length; i++){
+            if (activities[i].id == activity.id){
+                activities[i].name = activity.name;
+                activities[i].description = activity.description;
+                activities[i].startDate = Date.parse(activity.startDate);
+                activities[i].finishDate = Date.now();
+                activities[i].isActive = true;
+                activities[i].project = activity.project;
+                activities[i].isFinished = true;
+            }
+        }
+    }
+    RewriteActivities(activities);
+    res.redirect("/editActivity?id=" + activity.id);
 }

@@ -18,16 +18,21 @@
                     <table class="table table-hover table-bordered">
                         <thead class="thead-light">
                         <tr><th>Имя</th><th>Проект</th><th>Дата и время начала</th>
-                            <th>Дата и время конца</th><th>Время</th></tr>
+                            <th>Дата и время конца</th><th>Завершена</th><th>Время</th></tr>
                         </thead>
                         <tbody>
                         {{#each activities}}
                             <tr>
                                 <td><a href="/editActivity?id={{this.id}}">{{this.name}}</a></td>
                                 <td>{{this.project}}</td>
-                                <td>{{this.startDate}}</td>
-                                <td>{{this.finishDate}}</td>
-                                <td>{{this.Time}}</td>
+                                <td>{{toDate this.startDate}}</td>
+                                <td>{{toDate this.finishDate}}</td>
+                                <td>{{this.isFinished}}</td>
+                                {{#if this.isFinished}}
+                                    <td>{{getTimeToDate this.startDate this.finishDate}}</td>
+                                {{else}}
+                                    <td>Ещё не завершено</td>
+                                {{/if}}
                             </tr>
                         {{/each}}
                         </tbody>
