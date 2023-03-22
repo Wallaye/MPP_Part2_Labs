@@ -42,7 +42,7 @@ function RewriteActivities(activities) {
 
 export const newActivity = (req, res) => {
     let activity = {
-        id: 0,
+        id: -1,
         name: "",
         description: "",
         project: -1,
@@ -67,11 +67,12 @@ export const saveActivity = (req, res) => {
         startDate: req.body.startDate,
         time: -1
     }
-    if (activity.id == 0){
+    console.log(activity)
+    if (activity.id == -1){
         let maxId = Math.max.apply(Math, activities.map(function(o) {
             return o.id;
         }));
-        if (maxId == Infinity) {
+        if (Math.abs(maxId) === Infinity) {
             maxId = 0;
         }
         activity.id = maxId + 1;
@@ -117,7 +118,7 @@ export const saveActivities = (activities) => {
 
 export const editActivity = (req, res) => {
     let activity = GetActivityById(req.query.id);
-
+    console.log("editing " + activity)
     if (activity != null) {
         res.render("editActivity.hbs", {
             title: activity.name,

@@ -19,12 +19,12 @@
 
             <div class="form-group">
                 <label for="content">Описание активности:</label>
-                <textarea class="form-control" name="content" placeholder="Описание активности..">{{activity.description}}</textarea>
+                <textarea class="form-control" name="description" placeholder="Описание активности..">{{activity.description}}</textarea>
             </div>
 
             <div class="form-group">
-                <label for="date">Дата начала:</label><br>
-                <input type="date" name="startDate" value="{{activity.startDate}}">
+                <label for="date">Дата и время начала:</label><br>
+                <input type="datetime-local" name="startDate" value="{{activity.startDate}}">
             </div>
 
             <div class="form-group">

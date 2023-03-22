@@ -13,7 +13,6 @@ app.set("view engine", "hbs");
 hbs.registerPartials(path.join(__dirname, '/views/partials'));
 const urlParser = bodyParser.urlencoded({extended: false});
 
-
 app.get("/", function(request, response){
     let activities = GetAct();
     response.render("homePage.hbs", {
@@ -25,6 +24,8 @@ app.post("/editActivity", urlParser, editActivity);
 app.post("/deleteActivity", urlParser, deleteActivity);
 app.post("/newActivity", urlParser, newActivity);
 app.post("/saveActivity", urlParser, saveActivity);
+app.get("/editActivity", editActivity);
+
 
 app.get("/projects", (req, res) => {
     res.render("projectsPage.hbs");
@@ -34,12 +35,6 @@ app.post("/deleteProject", urlParser, deleteProject);
 app.post("/saveProject", urlParser, saveProject);
 app.post("/editProject", urlParser, editProject);
 
-app.get("/editActivity", (req, res) => {
-    res.render("editActivity.hbs", {
-        title: "SUIIII",
-        activity: req.query.id
-    })
-})
 
 
 app.listen(3000);
