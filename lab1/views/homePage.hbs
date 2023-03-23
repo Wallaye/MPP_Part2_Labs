@@ -27,10 +27,11 @@
                                 <td>{{this.project}}</td>
                                 <td>{{toDate this.startDate}}</td>
                                 <td>{{toDate this.finishDate}}</td>
-                                <td>{{this.isFinished}}</td>
                                 {{#if this.isFinished}}
+                                    <td>Да</td>
                                     <td>{{getTimeToDate this.startDate this.finishDate}}</td>
                                 {{else}}
+                                    <td>Нет</td>
                                     <td>Ещё не завершено</td>
                                 {{/if}}
                             </tr>

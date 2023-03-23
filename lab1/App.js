@@ -40,11 +40,4 @@ app.post("/startActivity", urlParser, startActivity);
 app.post("/stopActivity", urlParser, finishActivity);
 app.get("/editActivity", editActivity);
 
-app.post("/newProject", urlParser, newProject);
-app.post("/deleteProject", urlParser, deleteProject);
-app.post("/saveProject", urlParser, saveProject);
-app.post("/editProject", urlParser, editProject);
-
-
-
 app.listen(3000);
