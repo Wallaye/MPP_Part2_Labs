@@ -12,7 +12,6 @@ export function generateTokens(payload){
 
 export async function saveToken(userId, refreshToken){
     const tokenData = await Token.findOne({user: userId});
-    console.log(tokenData);
     if (tokenData){
         tokenData.refreshToken = refreshToken;
         return tokenData.save();
@@ -26,4 +25,24 @@ export async function removeToken(refreshToken){
 
 export async function findToken(refreshToken){
     return Token.findOne({refreshToken});
+}
+
+export function validateAccessToken(token){
+    try{
+        const response = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
+        console.log(response);
+        return response;
+    } catch (e){
+        return null;
+    }
+}
+export function validateRefreshToken(token){
+    try{
+        const userData = jwt.verify(token, process.env.JWT_REFRESH_TOKEN);
+        console.log("VALIDATE" + userData);
+        return userData;
+    } catch (e){
+        console.log(e);
+        return null;
+    }
 }

@@ -5,17 +5,25 @@ import * as dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRouter from "./routes/authRouter.js";
 import {error as errorMiddleware} from "./middleware/error.js";
+import cors from 'cors';
+
 
 dotenv.config()
 const PORT = process.env.PORT || 5000;
 const URL = process.env.DB_URL;
 
+
 const app = express();
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL
+}))
 app.use("/api/auth", authRouter);
 
 app.use(errorMiddleware)
+
 
 app.post('/', async (req, res) => {
     try {
