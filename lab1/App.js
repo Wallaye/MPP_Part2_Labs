@@ -2,7 +2,7 @@ import express from "express";
 import hbs from "hbs";
 import path from "path";
 import bodyParser from "express";
-import {deleteProject, editProject, newProject, saveProject} from "./controllers/projectController.js";
+
 import {
     GetAct,
     editActivity,
