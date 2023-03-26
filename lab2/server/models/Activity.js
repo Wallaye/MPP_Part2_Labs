@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 const Activity = new mongoose.Schema({
     activityId: {type: Number, required: true, unique: true},
@@ -8,7 +8,7 @@ const Activity = new mongoose.Schema({
     isFinished: {type: Boolean, default: false},
     startDate: {type: Date, default: Date.now()},
     finishDate: {type: Date, default: null},
-    userName: {type: String, required: true}
+    userName: {type: String, required: true},
 })
 
 export default mongoose.model('Activities', Activity)

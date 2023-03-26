@@ -4,6 +4,7 @@ import Activity from "./models/Activity.js";
 import * as dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRouter from "./routes/authRouter.js";
+import activitiesRouter from "./routes/activitiesRouter.js";
 import {error as errorMiddleware} from "./middleware/error.js";
 import cors from 'cors';
 
@@ -21,6 +22,7 @@ app.use(cors({
     origin: process.env.CLIENT_URL
 }))
 app.use("/api/auth", authRouter);
+app.use("/api", activitiesRouter);
 
 app.use(errorMiddleware)
 
