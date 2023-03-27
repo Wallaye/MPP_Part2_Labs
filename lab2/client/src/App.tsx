@@ -8,10 +8,13 @@ const App: FC = () => {
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
-            userStore.checkIsAuth().then();
+            userStore.checkIsAuth();
         }
     }, [])
 
+    if (userStore.isLoading){
+        return <div>Loading</div>
+    }
     if (!userStore.isAuth){
         return <LoginForm/>
     }
