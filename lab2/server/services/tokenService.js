@@ -30,7 +30,6 @@ export async function findToken(refreshToken){
 export function validateAccessToken(token){
     try{
         const response = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-        console.log(response);
         return response;
     } catch (e){
         return null;
@@ -39,7 +38,6 @@ export function validateAccessToken(token){
 export function validateRefreshToken(token){
     try{
         const userData = jwt.verify(token, process.env.JWT_REFRESH_TOKEN);
-        console.log("VALIDATE" + userData);
         return userData;
     } catch (e){
         console.log(e);

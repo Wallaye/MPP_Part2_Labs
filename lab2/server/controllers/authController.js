@@ -21,7 +21,6 @@ export async function login(req, res, next) {
     try {
         const {userName, password} = req.body;
         const userData = await authService.login(userName, password)
-        console.log("SUOO "+JSON.stringify(userData));
         res.cookie('refreshToken', userData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true});
         return res.json(userData);
     } catch (e) {

@@ -5,6 +5,7 @@ import {AuthResponse} from "../models/response/AuthResponse";
 import axios from "axios";
 import {API_URL} from "../http";
 
+
 export default class UserStore {
     user = {} as IUser;
     isAuth = false;
@@ -29,7 +30,6 @@ export default class UserStore {
     async login(userName: string, password: string) {
         try {
             const response = await AuthService.login(userName, password);
-            console.log(response);
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
             this.setUser(response.data.user);
@@ -41,7 +41,6 @@ export default class UserStore {
     async registration(userName: string, password: string) {
         try {
             const response = await AuthService.registration(userName, password);
-            console.log(response);
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
             this.setUser(response.data.user);
@@ -52,8 +51,7 @@ export default class UserStore {
 
     async logout() {
         try {
-            const response = await AuthService.logout();
-            console.log(response);
+            await AuthService.logout();
             localStorage.removeItem('token');
             this.setAuth(false);
             this.setUser({} as IUser);
@@ -66,9 +64,9 @@ export default class UserStore {
         this.setLoading(true);
         try {
             const response = await axios.get<AuthResponse>(`${API_URL}/auth/refresh`, {withCredentials: true});
-            console.log(response);
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
+
             this.setUser(response.data.user);
         } catch (e: any) {
             console.log(e.response?.data?.message);

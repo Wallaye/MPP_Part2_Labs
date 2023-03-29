@@ -30,6 +30,8 @@ export async function AddActivity(activity){
 
 export async function EditActivity(activity, userName){
     const act = await Activity.findOne({activityId: activity.activityId});
+    console.log("found in db:", act);
+
     if (!act){
         throw ApiError.BadRequest("Нет такой активности");
     }
@@ -37,13 +39,6 @@ export async function EditActivity(activity, userName){
         throw ApiError.NoAccessError();
     }
     return Activity.findOneAndUpdate({activityId: act.activityId}, activity, {new: true});
-    // act.name = activity.name;
-    // act.description = activity.description;
-    // act.isActive = activity.isActive;
-    // act.isFinished = activity.isFinished;
-    // act.startDate = activity.startDate;
-    // act.finishDate = activity.finishDate;
-    // return act.save();
 }
 
 export async function DeleteActivity(activityId, userName){

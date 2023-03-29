@@ -9,6 +9,7 @@ const Activity = new mongoose.Schema({
     startDate: {type: Date, default: Date.now()},
     finishDate: {type: Date, default: null},
     userName: {type: String, required: true},
+    project: {type: String, default: null}
 })
 
 export default mongoose.model('Activities', Activity)
