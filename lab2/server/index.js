@@ -26,20 +26,6 @@ app.use("/api", activitiesRouter);
 
 app.use(errorMiddleware)
 
-
-app.post('/', async (req, res) => {
-    try {
-        const {activityId, name, description, isActive, isFinished, startDate, finishDate, userName} = req.body;
-        const response = await Activity.create({activityId, name, description, isActive, isFinished, startDate, finishDate, userName});
-        console.log(req.body);
-        res.status(200).json("Works");
-    }catch (e) {
-        console.log(e);
-        res.status(400).json("ZALUPA");
-    }
-})
-
-
 async function startApp(){
     try {
         await mongoose.connect(URL);
