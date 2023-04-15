@@ -17,7 +17,8 @@ export const activityHandler = (socket) => {
             const activity = await actService.getActivityById(id, userName);
             socket.emit("activities:getOne", activity)
         } catch (e) {
-            SocketErrors.emitError(e);
+            console.log(e);
+            SocketErrors.emitError(socket, e);
         }
     }
 
@@ -27,16 +28,16 @@ export const activityHandler = (socket) => {
             const act = await actService.EditActivity(activity, userName);
             socket.emit("activities:editOne", act);
         } catch (e) {
-            SocketErrors.emitError(e);
+            SocketErrors.emitError(socket, e);
         }
     }
 
     async function addActivity(activity) {
         try {
             const act = await actService.AddActivity(activity);
-            socket.emit("activities:addOne", act);
+            socket.emit("activities:getOne", act);
         } catch (e) {
-            SocketErrors.emitError(e);
+            SocketErrors.emitError(socket, e);
         }
     }
 
@@ -45,7 +46,7 @@ export const activityHandler = (socket) => {
             const act = await actService.DeleteActivity(activityId, userName);
             socket.emit("activities:deleteOne", act);
         } catch (e) {
-            SocketErrors.emitError(e);
+            SocketErrors.emitError(socket, e);
         }
     }
 

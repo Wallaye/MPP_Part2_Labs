@@ -17,6 +17,7 @@ export async function getActivityById(activityId, userName){
 }
 
 export async function AddActivity(activity){
+    console.log(activity);
     const activities = await Activity.find();
     let maxIndex = -1;
     for(const _activity of activities){

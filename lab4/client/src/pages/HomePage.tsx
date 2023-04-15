@@ -7,6 +7,7 @@ import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
 import {socketPrivate} from "../http";
 import {IUser} from "../models/IUser";
+import ActivitiesService from "../services/activitiesService";
 
 
 const HomePage: FC = () => {
@@ -18,6 +19,7 @@ const HomePage: FC = () => {
     const [error, setError] = useState<any>(null);
 
     function getActivities(activities: IActivity[]) {
+        console.log("GOT", activities);
         setActivities([...activities])
         setLoading(false);
         setError(null);
@@ -28,15 +30,6 @@ const HomePage: FC = () => {
     }
 
     useEffect(() => {
-            setLoading(true);
-            if (userStore.user == {} as IUser) {
-                navigate(-1);
-            }
-            socketPrivate.emit("activities:getAll", userStore.user.userName)
-        }
-        , [])
-
-    useEffect(() => {
         socketPrivate.on('activities:getAll', getActivities)
         socketPrivate.on('error', errorListener)
         return () => {
@@ -45,9 +38,17 @@ const HomePage: FC = () => {
         }
     }, [])
 
+    useEffect(() => {
+            setLoading(true);
+            console.log("user: ", userStore.user)
+            if (userStore.user !== {} as IUser) {
+                ActivitiesService.getActivities(userStore.user.userName);
+            }
+        }
+        , [])
+
     if (isLoading) {
         return <>
-            <h1>SUIII</h1>
             <div className="align-self-center spinner-border text-primary" role="status">
                 <span className="sr-only"></span>
             </div>
@@ -73,7 +74,7 @@ const HomePage: FC = () => {
             <div>
                 <div className="container-fluid mt-3 d-flex justify-content-center">
                     <div className="row w-auto">
-                        <button className="btn btn-success mb-3" onClick={() => navigate('-1')}>Добавить активность
+                        <button className="btn btn-success mb-3" onClick={() => navigate('/activities/-1')}>Добавить активность
                         </button>
                     </div>
                 </div>

@@ -2,6 +2,8 @@ import {IUser} from "../models/IUser";
 import {makeAutoObservable} from "mobx";
 import AuthService from "../services/authService";
 import {API_URL, socket} from "../http";
+import {IErrorResponse} from "../models/response/IErrorResponse";
+import {ILoginResponse} from "../models/response/ILoginResponse";
 
 export default class UserStore {
     user = {} as IUser;
@@ -11,7 +13,7 @@ export default class UserStore {
     constructor() {
         socket.on("users:login", this.getLoginData)
         socket.on("users:registration", this.getLoginData)
-        socket.on("users:logout", this.getLoginData)
+        socket.on("users:logout", this.logOutListener)
         socket.on("users:refresh", this.getLoginData)
         socket.on("error", this.errorListener)
         makeAutoObservable(this)
@@ -41,9 +43,19 @@ export default class UserStore {
         this.setUser(userData.user);
     }
 
-    private errorListener = (error: IErrorResponse) => {
+    private logOutListener =  (userData: IUser) => {
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('accessToken');
         this.setAuth(false);
-        this.user = {} as IUser;
+        this.setUser({} as IUser);
+    }
+
+    private errorListener = (error: IErrorResponse) => {
+        console.log(error);
+        if (error.status != 403) {
+            this.setAuth(false);
+            this.user = {} as IUser;
+        }
     }
 
     registration(userName: string, password: string) {
@@ -52,10 +64,6 @@ export default class UserStore {
 
     logout() {
         AuthService.logout(localStorage.getItem("refreshToken") as string);
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('accessToken');
-        this.setAuth(false);
-        this.setUser({} as IUser);
     }
 
     checkIsAuth() {
@@ -63,14 +71,3 @@ export default class UserStore {
     }
 }
 
-interface ILoginResponse {
-    user: IUser;
-    refreshToken: string;
-    accessToken: string;
-}
-
-interface IErrorResponse {
-    status?: number;
-    message?: string;
-    errors?: any;
-}

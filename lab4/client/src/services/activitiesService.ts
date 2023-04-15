@@ -18,7 +18,8 @@ export default class ActivitiesService {
         socketPrivate.emit("activities:editOne", userName, activity)
     }
 
-    static addActivity(userName: string, activity: IActivity) {
-        socketPrivate.emit("activities:deleteOne", userName, activity)
+    static addActivity(activity: IActivity) {
+        console.log(activity);
+        socketPrivate.emit("activities:addOne", activity)
     }
 }

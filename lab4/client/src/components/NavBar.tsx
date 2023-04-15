@@ -27,7 +27,7 @@ const NavBar: FC<NavBarProps>= (props) => {
             <div className="my-2 my-lg-0">
                 <span className="mr-sm-2 text-black">{props.userName}</span>
                 <button onClick={() => {
-                    navigate('/activities/')
+                    navigate('/')
                     userStore.logout();
                     //actStore.setActivities([] as IActivity[])
                 }} className="btn btn-outline-danger my-2 my-sm-0">Выйти</button>

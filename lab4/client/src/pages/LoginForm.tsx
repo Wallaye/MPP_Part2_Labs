@@ -1,13 +1,26 @@
-import React, {FC, useContext} from 'react';
+import React, {FC, useContext, useEffect} from 'react';
 import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {useInput} from "../hooks/useInput";
 import "bootstrap/dist/css/bootstrap.css"
+import {IErrorResponse} from "../models/response/IErrorResponse";
+import {socket} from "../http";
 
 const LoginForm: FC = () => {
     const {value: userName, onChange: setUserName} = useInput('');
     const {value: password, onChange: setPassword} = useInput('');
     const {userStore} = useContext(Context);
+
+    function errorHandler(error: IErrorResponse) {
+        alert(error.message);
+    }
+
+    useEffect(() => {
+        socket.on("error", errorHandler)
+        return () => {
+             socket.off("error", errorHandler)
+        }
+    }, [])
 
     return (
         <>

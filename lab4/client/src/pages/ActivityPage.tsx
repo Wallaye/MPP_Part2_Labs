@@ -33,6 +33,7 @@ const ActivityPage: FC = () => {
     })
 
     function getActivity(activity: IActivity) {
+        console.log(activity);
         setLoading(false);
         setActivity(activity)
         setFields({...activity});
@@ -43,7 +44,8 @@ const ActivityPage: FC = () => {
     function deleteActivity(activity: IActivity) {
         setLoading(false);
         setError(null);
-        navigate(-1);
+        console.log("delete", activity);
+        navigate("/activities/");
     }
 
     function editActivity(activity: IActivity) {
@@ -72,8 +74,7 @@ const ActivityPage: FC = () => {
 
     useEffect(() => {
         if (id != '-1') {
-            setLoading(true);
-            socketPrivate.emit("activities:getOne", userStore.user.userName, id);
+            ActivitiesService.getActivity( +id!, userStore.user.userName!);
         } else {
             setFields({...fields, startDate: DateToStringForInput(Date.now())})
         }
@@ -149,12 +150,8 @@ const ActivityPage: FC = () => {
                         setFields({...fields, isActive: true});
                         if (canAddActivity(fields.name)) {
                             console.log("Adding");
-                            ActivitiesService.addActivity(userStore.user.userName, {...fields, isActive: true});
-                            setFields({
-                                ...fields,
-                                isActive: true,
-                                activityId: activity.activityId
-                            });
+                            console.log(fields);
+                            ActivitiesService.addActivity({...fields, isActive: true});
                         }
                     }}>Запустить</button>}
                 {(fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
