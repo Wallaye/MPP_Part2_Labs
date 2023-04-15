@@ -21,8 +21,8 @@ const io = new Server(httpServer, {
 })
 
 const onConnection = (socket) => {
-    userHandler(socket);
     console.log("connected");
+    userHandler(socket);
 }
 
 io.of("/private/").use(authMiddleware);

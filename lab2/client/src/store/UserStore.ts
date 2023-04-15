@@ -34,6 +34,7 @@ export default class UserStore {
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e: any) {
+            alert("Неверные данные")
             console.log(e.response?.data?.message);
         }
     }
@@ -45,6 +46,7 @@ export default class UserStore {
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e: any) {
+            alert("Такой пользователь уже есть")
             console.log(e.response?.data?.message);
         }
     }

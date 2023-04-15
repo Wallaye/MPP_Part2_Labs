@@ -27,7 +27,6 @@ export async function login(userName, password){
     if (!isEqualPass){
         throw ApiError.BadRequest('Неверный пароль');
     }
-    console.log(userName + " " + password)
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({...userDto});
     await tokenService.saveToken(userDto.userId, tokens.refreshToken);

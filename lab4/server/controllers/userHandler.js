@@ -5,22 +5,23 @@ export const userHandler = (socket) => {
     async function login(userName, password) {
         try {
             const userData = await authService.login(userName, password);
-            socket.emit("user:login", userData)
+            console.log(userData);
+            socket.emit("users:login", userData)
         } catch (e) {
             SocketErrors.emitError(socket, e);
         }
     }
 
-    async function registration(socket, userName, password) {
+    async function registration(userName, password) {
         try {
             const userData = await authService.registration(userName, password);
-            socket.emit("user:registration", userData)
+            socket.emit("users:registration", userData)
         } catch (e) {
             SocketErrors.emitError(socket, e);
         }
     }
 
-    async function logout(socket, refreshToken) {
+    async function logout(refreshToken) {
         try {
             const tokenData = await authService.logout(refreshToken)
             socket.emit("users:logout", tokenData)
@@ -29,7 +30,7 @@ export const userHandler = (socket) => {
         }
     }
 
-    async function refresh(socket, refreshToken) {
+    async function refresh(refreshToken) {
         try {
             const tokenData = await authService.refresh(refreshToken);
             socket.emit("users:refresh", tokenData)
@@ -43,7 +44,4 @@ export const userHandler = (socket) => {
     socket.on("users:logout", logout);
     socket.on("users:refresh", refresh);
 }
-
-
-
 

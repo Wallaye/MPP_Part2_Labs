@@ -13,6 +13,7 @@ export const activityHandler = (socket) => {
 
     async function getActivityById(userName, id) {
         try {
+            console.log(userName, id);
             const activity = await actService.getActivityById(id, userName);
             socket.emit("activities:getOne", activity)
         } catch (e) {
@@ -20,13 +21,37 @@ export const activityHandler = (socket) => {
         }
     }
 
-    async function EditActivity(activity, userName) {
+    async function editActivity(userName, activity) {
         try {
-            let act = await actService.EditActivity(activity, userName);
+            console.log(activity, userName);
+            const act = await actService.EditActivity(activity, userName);
             socket.emit("activities:editOne", act);
         } catch (e) {
             SocketErrors.emitError(e);
         }
     }
 
+    async function addActivity(activity) {
+        try {
+            const act = await actService.AddActivity(activity);
+            socket.emit("activities:addOne", act);
+        } catch (e) {
+            SocketErrors.emitError(e);
+        }
+    }
+
+    async function deleteActivity(userName, activityId) {
+        try {
+            const act = await actService.DeleteActivity(activityId, userName);
+            socket.emit("activities:deleteOne", act);
+        } catch (e) {
+            SocketErrors.emitError(e);
+        }
+    }
+
+    socket.on("activities:getAll", getAllActivitiesForUser)
+    socket.on("activities:getOne", getActivityById)
+    socket.on("activities:editOne", editActivity)
+    socket.on("activities:addOne", addActivity)
+    socket.on("activities:deleteOne", deleteActivity)
 }
