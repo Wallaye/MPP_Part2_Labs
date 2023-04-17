@@ -2,6 +2,7 @@ import React, {FC, useContext, useEffect, useState} from 'react';
 import {IActivity} from "../models/IActivity";
 import {DateToStringForInput} from "../utility/Utils";
 import {useNavigate, useParams} from "react-router-dom";
+import ActivitiesService from "../services/activitiesService";
 import NavBar from "../components/NavBar";
 import {Context} from "../index";
 import {useMutation, useQuery} from "@apollo/client";
@@ -17,10 +18,11 @@ interface IError {
 const ActivityPage: FC = () => {
     const {id} = useParams<string>();
     const [activity, setActivity] = useState<IActivity>({} as IActivity);
+    const [isLoading, setLoading] = useState<boolean>(false);
     const {userStore} = useContext(Context);
     const navigate = useNavigate();
     const [error, setError] = useState<IError | null>(null)
-    const [myError, setErr] = useState<any>(null)
+
     const [fields, setFields] = useState<IActivity>({
         name: "",
         description: "",
@@ -69,7 +71,7 @@ const ActivityPage: FC = () => {
         onCompleted: () => {
             refetch()
         }
-    })
+    }, [])
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = event.target;
@@ -82,21 +84,21 @@ const ActivityPage: FC = () => {
         console.log(fields.finishDate)
     }
 
-    if (loading) {
+    if (isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
             <span className="sr-only"></span>
         </div>
     }
 
-    if (myError != null) {
+    if (error != null) {
         return <>
             <NavBar userName={userStore.user.userName}/>
             <div className="container d-grid">
                 <div className="row">
-                    <h1 className="text-danger">{myError.status}</h1>
+                    <h1 className="text-danger">{error.status}</h1>
                 </div>
                 <div className="row">
-                    <h2 className="text-danger">{myError.message}</h2>
+                    <h2 className="text-danger">{error.message}</h2>
                 </div>
             </div>
         </>
@@ -106,14 +108,9 @@ const ActivityPage: FC = () => {
         <>
             <NavBar userName={userStore.user.userName}/>
             <div className="container-fluid mt-3">
-                {fields.activityId != -1 && <button onClick={async (e) => {
-                    e.preventDefault();
-                    deleteActivity({
-                        variables: {
-                            activityId: fields.activityId,
-                            userName: fields.userName
-                        }
-                    })
+                {fields.activityId != -1 && <button onClick={() => {
+                    ActivitiesService.deleteActivity(fields.activityId);
+                    navigate(-1);
                 }
                 } className="btn btn-danger">Удалить</button>}
                 <input hidden name="id" value={activity.activityId}/>
@@ -145,9 +142,7 @@ const ActivityPage: FC = () => {
                 </div>}
 
                 {(!fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
-                    <button className="btn btn-primary mt-2" onClick={(event) => {
-                        event.preventDefault();
-
+                    <button className="btn btn-primary mt-2" onClick={() => {
                         setFields({...fields, isActive: true});
                         if (canAddActivity(fields.name)) {
                             console.log("Adding");
@@ -173,8 +168,7 @@ const ActivityPage: FC = () => {
                     }}>Запустить</button>}
                 {(fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
                     <button className="btn btn-success mt-2"
-                            onClick={(e) => {
-                                e.preventDefault();
+                            onClick={() => {
                                 setFields({
                                     ...fields,
                                     isFinished: true,

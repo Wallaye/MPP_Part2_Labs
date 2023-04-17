@@ -1,26 +1,14 @@
 import React, {FC, useContext} from 'react';
 import {Context} from "../index";
 import {useNavigate} from "react-router-dom";
-import {useMutation} from "@apollo/client";
-import {LOGOUT} from "../graphql/mutations/userMutations";
-import {onError, onLogout} from "../store/UserStore";
-import {IUser} from "../models/IUser";
 
-interface NavBarProps {
+interface NavBarProps{
     userName: string
 }
 
-const NavBar: FC<NavBarProps> = (props) => {
+const NavBar: FC<NavBarProps>= (props) => {
     const {userStore} = useContext(Context);
     const navigate = useNavigate();
-    const [logout] = useMutation(LOGOUT, {
-        onCompleted: data => {
-            onLogout()
-            console.log(data)
-        },
-        onError: onError
-    })
-
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <button className="navbar-toggler" type="button" data-toggle="collapse"
