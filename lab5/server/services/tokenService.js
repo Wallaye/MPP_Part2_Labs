@@ -20,7 +20,7 @@ export async function saveToken(userId, refreshToken){
 }
 
 export async function removeToken(refreshToken){
-    return Token.deleteOne({refreshToken});
+    return Token.findOneAndRemove({refreshToken});
 }
 
 export async function findToken(refreshToken){

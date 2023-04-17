@@ -25,12 +25,14 @@ const userMutations = new graphql.GraphQLObjectType({
             }
         },
         logout: {
-            type: graphql.GraphQLBoolean,
+            type: graphql.GraphQLString,
             args:{
                 refreshToken: {type: new graphql.GraphQLNonNull(graphql.GraphQLString)}
             },
             resolve: async (_, {refreshToken}) => {
-                return await AuthService.logout(refreshToken)
+                const response = await AuthService.logout(refreshToken)
+                console.log(response);
+                return response.refreshToken;
             }
         },
          refresh: {
