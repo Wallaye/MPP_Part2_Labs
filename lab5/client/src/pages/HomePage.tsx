@@ -5,13 +5,17 @@ import NavBar from "../components/NavBar";
 import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {useNavigate} from "react-router-dom";
+import {useQuery} from "@apollo/client";
+import {GET_ACTIVITIES} from "../graphql/queries/activityQueries";
 
 interface HomePageProps {
     activities: IActivity[];
 }
 
-const HomePage: FC<HomePageProps> = ({activities}) => {
-    const {userStore, actStore} = useContext(Context);
+const HomePage: FC = () => {
+    const {userStore} = useContext(Context);
+    const [activities, setActivities] = useState<IActivity[]>([])
+    const [error, setError] = useState<any>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,7 +43,7 @@ const HomePage: FC<HomePageProps> = ({activities}) => {
             console.log(err)
             onErrorHandler(err)
         }
-        , [actStore])
+    })
 
     if (loading || userStore.isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
@@ -55,7 +59,7 @@ const HomePage: FC<HomePageProps> = ({activities}) => {
                     <span className="h1 align-self-center">Нет активностей!</span>
                 </div>
                 <div className="row w-auto">
-                    <button className="btn btn-success mb-3" onClick={() => navigate('-1')}>Добавить активность</button>
+                    <button className="btn btn-success mb-3" onClick={() => navigate('/graphql/activities/-1')}>Добавить активность</button>
                 </div>
             </div>
         </>
@@ -66,7 +70,7 @@ const HomePage: FC<HomePageProps> = ({activities}) => {
             <div>
                 <div className="container-fluid mt-3 d-flex justify-content-center">
                     <div className="row w-auto">
-                        <button className="btn btn-success mb-3" onClick={() => navigate('-1')}>Добавить активность
+                        <button className="btn btn-success mb-3" onClick={() => navigate('/graphql/activities/-1')}>Добавить активность
                         </button>
                     </div>
                 </div>

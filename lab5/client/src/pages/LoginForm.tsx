@@ -3,6 +3,11 @@ import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {useInput} from "../hooks/useInput";
 import "bootstrap/dist/css/bootstrap.css"
+import {useMutation} from "@apollo/client";
+import {LOGIN, REGISTRATION} from "../graphql/mutations/userMutations";
+import {onAuth, onError} from "../store/UserStore";
+import {IUser} from "../models/IUser";
+import {useNavigate} from "react-router-dom";
 
 const LoginForm: FC = () => {
     const {value: userName, onChange: setUserName} = useInput('');
@@ -51,6 +56,7 @@ const LoginForm: FC = () => {
                     </button>
 
                     <button className="btn btn-success w-50" onClick={() => {
+
                         try {
                             userStore.registration(userName, password).then((data) => {
                                     navigate('/graphql/activities')

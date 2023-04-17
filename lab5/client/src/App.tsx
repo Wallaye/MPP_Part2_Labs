@@ -14,17 +14,7 @@ const loginFail = () => {
 }
 
 const App: FC = () => {
-    const {userStore, actStore} = useContext(Context);
-
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-            userStore.checkIsAuth().then(
-                () => {
-                    actStore.getActivities()
-                }
-            );
-        }
-    }, [])
+    const {userStore} = useContext(Context);
 
     useEffect(() => {
         userStore.checkIsAuth()
@@ -34,10 +24,6 @@ const App: FC = () => {
         return <div className="align-self-center spinner-border text-primary" role="status">
             <span className="sr-only"></span>
         </div>
-    }
-
-    if (!userStore.isAuth) {
-        return <LoginForm/>
     }
 
     return (

@@ -37,7 +37,7 @@ const ActivityPage: FC = () => {
 
     const errorHandler = (error: any) => {
         console.log(error)
-        setErr(error.networkError.result.message)
+        setError(error)
     }
 
     const {loading, refetch} = useQuery(GET_ONE_ACTIVITY, {
@@ -71,7 +71,7 @@ const ActivityPage: FC = () => {
         onCompleted: () => {
             refetch()
         }
-    }, [])
+    })
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = event.target;
@@ -210,7 +210,7 @@ const ActivityPage: FC = () => {
                                                 isActive: false,
                                                 isFinished: true,
                                                 startDate: fields.startDate,
-                                                finishDate: DateToStringForInput(Date.now()),
+                                                finishDate: fields.finishDate,
                                                 userName: fields.userName,
                                                 project: fields.project
                                             }

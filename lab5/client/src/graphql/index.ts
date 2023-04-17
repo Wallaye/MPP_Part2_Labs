@@ -1,4 +1,4 @@
-import {ApolloClient, InMemoryCache} from "@apollo/client";
+import {ApolloClient, createHttpLink, from, InMemoryCache} from "@apollo/client";
 import {RetryLink} from "@apollo/client/link/retry";
 import {REFRESH} from "./mutations/userMutations";
 import {setContext} from "@apollo/client/link/context";
@@ -55,3 +55,32 @@ function retryLink(refreshFailCallback: any) {
         }
     })
 }
+
+const httpPrivateLink = createHttpLink({
+    uri: PRIVATE_URL,
+});
+
+const authLink = setContext((_, { headers }) => {
+    const token = localStorage.getItem('accessToken');
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : "",
+        }
+    }
+});
+
+export const privateClient = (refreshFailCallback: any) =>
+    new ApolloClient({
+    link: from([
+        authLink,
+        retryLink(refreshFailCallback),
+        httpPrivateLink
+    ]),
+    cache: new InMemoryCache(),
+    defaultOptions:{
+        watchQuery:{
+            fetchPolicy: 'network-only'
+        },
+    }
+})
