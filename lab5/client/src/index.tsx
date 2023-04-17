@@ -2,6 +2,7 @@ import React, {createContext} from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import UserStore from "./store/UserStore";
+import ActivitiesStore from "./store/ActivitiesStore";
 import {ApolloClient, ApolloProvider, InMemoryCache} from "@apollo/client";
 import {userClient} from "./graphql";
 
@@ -10,11 +11,12 @@ const root = ReactDOM.createRoot(
 );
 
 const userStore = new UserStore();
-export const Context = createContext({userStore});
+const actStore = new ActivitiesStore();
+export const Context = createContext({userStore, actStore});
 
 root.render(
     <ApolloProvider client={userClient}>
-        <Context.Provider value={{userStore}}>
+        <Context.Provider value={{userStore, actStore}}>
             <App/>
         </Context.Provider>
     </ApolloProvider>
