@@ -63,7 +63,7 @@ const HomePage: FC = () => {
                     <span className="h1 align-self-center">Нет активностей!</span>
                 </div>
                 <div className="row w-auto">
-                    <button className="btn btn-success mb-3" onClick={() => navigate('-1')}>Добавить активность</button>
+                    <button className="btn btn-success mb-3" onClick={() => navigate('/activities/-1')}>Добавить активность</button>
                 </div>
             </div>
         </>
