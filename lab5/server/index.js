@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import {privateSchema, userSchema} from "./graphql/schemas/index.js";
 import {error as errorMiddleware} from "./middleware/error.js";
+import authMiddleware from "./middleware/authMiddleware.js";
 
 
 dotenv.config();
@@ -26,10 +27,11 @@ app.use('/graphql/auth', graphqlHTTP({
 
 }))
 
-app.use('/graphql/activities', graphqlHTTP({
+app.use('/graphql/activities', authMiddleware, graphqlHTTP({
     graphiql: true,
     schema: privateSchema
 }))
+//app.use('graphql/activities', authMiddleware)
 
 app.use(errorMiddleware)
 async function startApp(){

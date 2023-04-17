@@ -2,6 +2,8 @@ import {ApolloClient, createHttpLink, from, InMemoryCache} from "@apollo/client"
 import {RetryLink} from "@apollo/client/link/retry";
 import {REFRESH} from "./mutations/userMutations";
 import {setContext} from "@apollo/client/link/context";
+import {useContext} from "react";
+import {Context} from "../index";
 
 export const API_URL = `http://localhost:5000/graphql/auth`;
 export const PRIVATE_URL = `http://localhost:5000/graphql/activities`;
@@ -18,7 +20,6 @@ function retryLink(refreshFailCallback: any) {
             retryIf: async (error, operation) => {
                 if (error && error.response && error.response.status === 401) {
                     try {
-                        console.log("retry")
                         const {data} = await userClient.mutate({
                             mutation: REFRESH,
                             variables: {
@@ -26,6 +27,7 @@ function retryLink(refreshFailCallback: any) {
                             }
                         })
                         if(!data.errors){
+                            console.log(data)
                             localStorage.setItem("refreshToken", data.refresh.refreshToken)
                             localStorage.setItem("accessToken", data.refresh.accessToken)
                         }else{
@@ -35,7 +37,6 @@ function retryLink(refreshFailCallback: any) {
 
                         operation.setContext((prev: any) => {
                             const token = localStorage.getItem('accessToken');
-
                             return {
                                 headers:{
                                     ...prev.headers,

@@ -13,21 +13,7 @@ const LoginForm: FC = () => {
     const {value: userName, onChange: setUserName} = useInput('');
     const {value: password, onChange: setPassword} = useInput('');
     const {userStore} = useContext(Context);
-    const navigate = useNavigate();
-
-    const [login] = useMutation(LOGIN, {
-        onCompleted: data => {
-            onAuth(data.login);
-        },
-        onError: onError
-    })
-
-    const [registration] = useMutation(REGISTRATION, {
-        onCompleted: data => {
-            onAuth(data.login)
-        },
-        onError: onError
-    })
+    const navigate = useNavigate()
 
     return (
         <>
@@ -60,21 +46,11 @@ const LoginForm: FC = () => {
                 <div className="d-flex justify-content-center align-items-center">
                     <button className="btn btn-primary w-50" onClick={() => {
                         try {
-                            login({
-                                variables: {
-                                    input: {
-                                        userName: userName,
-                                        password: password
-                                    }
-                                }
-                            }).then(data => {
-                                console.log("success ", data)
-                                userStore.setAuth(true);
-                                userStore.setUser(data.data.login.user as IUser);
-                                navigate("/graphql/activities")
+                            userStore.login(userName, password).then((data) => {
+                                navigate('/graphql/activities')
                             })
                         } catch (e: any) {
-                            console.log(e.response?.data?.message);
+                            alert(e);
                         }
                     }}>Логин
                     </button>
@@ -82,18 +58,10 @@ const LoginForm: FC = () => {
                     <button className="btn btn-success w-50" onClick={() => {
 
                         try {
-                            registration({
-                                variables: {
-                                    authInput: {
-                                        userName: userName,
-                                        password: password
-                                    }
+                            userStore.registration(userName, password).then((data) => {
+                                    navigate('/graphql/activities')
                                 }
-                            }).then(data => {
-                                userStore.setAuth(true);
-                                userStore.setUser(data.data.login.user as IUser);
-                                navigate("/graphql/activities")
-                            })
+                            )
                         } catch (e: any) {
                             alert("Такой пользователь уже есть")
                             console.log(e.response?.data?.message);

@@ -32,7 +32,9 @@ const NavBar: FC<NavBarProps> = (props) => {
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
                     <li className="nav-item">
-                        <a className="nav-link" href="/graphql/activities/">Home</a>
+                        <button className="nav-link btn-outline-light border-0"
+                           onClick={() => {navigate("/graphql/activities/")}}
+                           >Home</button>
                     </li>
                 </ul>
             </div>
@@ -40,18 +42,10 @@ const NavBar: FC<NavBarProps> = (props) => {
                 <span className="mr-sm-2 text-black">{props.userName}</span>
                 <button onClick={() => {
                     try {
-                        logout({
-                            variables: {
-                                refreshToken: localStorage.getItem("refreshToken")
-                            }
-                        }).then(data => {
+                        userStore.logout(localStorage.getItem("refreshToken")!).then(data => {
                             console.log(data)
-                            onLogout()
-                            userStore.setAuth(false);
-                            userStore.setUser({} as IUser);
                         })
                     } catch (e: any) {
-                        console.log("logout", e);
                         console.log(e.response?.data?.message);
                     }
                     navigate('/graphql/auth')

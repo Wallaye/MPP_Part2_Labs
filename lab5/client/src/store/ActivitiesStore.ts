@@ -3,6 +3,8 @@ import {makeAutoObservable} from "mobx";
 import {AuthResponse} from "../models/response/AuthResponse";
 import {API_URL} from "../http";
 import ActivitiesService from "../services/activitiesService";
+import {privateClient, userClient} from "../graphql";
+import {GET_ONE_ACTIVITY} from "../graphql/queries/activityQueries";
 
 export default class ActivitiesStore{
     isLoading = false;
@@ -18,6 +20,13 @@ export default class ActivitiesStore{
 
     setActivities(activities: IActivity[]){
         this.activities = activities;
+    }
+
+    async getActivity(userName: string, actId: string){
+        const {data} = await userClient.mutate({
+            mutation: GET_ONE_ACTIVITY,
+
+        })
     }
 
     async getActivities(){

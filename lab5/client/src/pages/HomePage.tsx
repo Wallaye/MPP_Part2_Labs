@@ -18,6 +18,15 @@ const HomePage: FC = () => {
     const [error, setError] = useState<any>(null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        userStore.checkIsAuth().then(data => {
+            console.log("isAuth" + data);
+            if (!data){
+                navigate('/graphql/auth')
+            }
+        })
+    }, [])
+
     const onErrorHandler = (err: any) => {
         console.log(error)
         setError(err.networkError.result.message)
@@ -36,7 +45,7 @@ const HomePage: FC = () => {
         }
     })
 
-    if (loading) {
+    if (loading || userStore.isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
             <span className="sr-only"></span>
         </div>
@@ -79,7 +88,7 @@ const HomePage: FC = () => {
                     <tbody>
                     {activities.map(el =>
                         <ActivityItem key={el.activityId}
-                                      onClick={(el) => navigate('/api/activities/' + el.activityId)}
+                                      onClick={(el) => navigate('/graphql/activities/' + el.activityId)}
                                       activity={el}/>
                     )}
                     </tbody>

@@ -7,6 +7,7 @@ import {Context} from "../index";
 import {useMutation, useQuery} from "@apollo/client";
 import {GET_ONE_ACTIVITY} from "../graphql/queries/activityQueries";
 import {ADD_ACTIVITY, DELETE_ACTIVITY, EDIT_ACTIVITY} from "../graphql/mutations/activityMutations";
+import {observer} from "mobx-react-lite";
 
 interface IError {
     status: number,
@@ -33,12 +34,13 @@ const ActivityPage: FC = () => {
     })
 
     const errorHandler = (error: any) => {
+        console.log(error)
         setErr(error.networkError.result.message)
     }
 
-    const {loading, refetch} = useQuery(GET_ONE_ACTIVITY,{
+    const {loading, refetch} = useQuery(GET_ONE_ACTIVITY, {
         variables: {
-            activityId: id,
+            id: +id!,
             userName: userStore.user.userName
         },
         onCompleted: data => {
@@ -74,9 +76,11 @@ const ActivityPage: FC = () => {
         setFields({...fields, [name]: value});
     }
 
-    useEffect(() => {
-        setActivity(activity)
-    })
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = event.target;
+        setFields({...fields, [name]: value});
+        console.log(fields.finishDate)
+    }
 
     if (loading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
@@ -131,13 +135,13 @@ const ActivityPage: FC = () => {
                 <div className="form-group">
                     <label htmlFor="date">Дата и время начала:</label><br/>
                     <input type="datetime-local" name="startDate" value={DateToStringForInput(fields.startDate)}
-                           onChange={handleChange}/>
+                           onChange={handleDateChange}/>
                 </div>
 
                 {fields.isFinished && <div className="form-group">
                     <label htmlFor="date">Дата и время окончания:</label><br/>
                     <input type="datetime-local" name="finishDate" value={DateToStringForInput(fields.finishDate)}
-                           onChange={handleChange}/>
+                           onChange={handleDateChange}/>
                 </div>}
 
                 {(!fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
@@ -153,7 +157,7 @@ const ActivityPage: FC = () => {
                                         name: fields.name,
                                         isActive: true,
                                         isFinished: false,
-                                        userName: fields.name,
+                                        userName: fields.userName,
                                         startDate: fields.startDate,
                                         activityId: -1
                                     }
@@ -163,7 +167,7 @@ const ActivityPage: FC = () => {
                                 setFields({
                                     ...(activity.data.addActivity)
                                 })
-                                navigate(`/graphql/activities/${activity.data.activityId}`)
+                                navigate(`/graphql/activities/${activity.data.addActivity.activityId}`)
                             })
                         }
                     }}>Запустить</button>}
@@ -178,11 +182,21 @@ const ActivityPage: FC = () => {
                                     finishDate: DateToStringForInput(Date.now())
                                 })
                                 if (canAddActivity(fields.name)) {
+                                    console.log(userStore.user.userName, fields)
+                                    console.log({...fields})
                                     editActivity({
-                                        variables:{
+                                        variables: {
                                             userName: userStore.user.userName,
-                                            activity: {
-                                                ...fields,
+                                            actInput: {
+                                                activityId: fields.activityId,
+                                                name: fields.name,
+                                                description: fields.description,
+                                                isActive: false,
+                                                isFinished: true,
+                                                startDate: fields.startDate,
+                                                finishDate: DateToStringForInput(Date.now()),
+                                                userName: fields.userName,
+                                                project: fields.project
                                             }
                                         }
                                     })
@@ -195,10 +209,20 @@ const ActivityPage: FC = () => {
                                     editActivity({
                                         variables: {
                                             userName: userStore.user.userName,
-                                            activity: {
-                                                ...fields,
+                                            actInput: {
+                                                activityId: fields.activityId,
+                                                name: fields.name,
+                                                description: fields.description,
+                                                isActive: false,
+                                                isFinished: true,
+                                                startDate: fields.startDate,
+                                                finishDate: DateToStringForInput(Date.now()),
+                                                userName: fields.userName,
+                                                project: fields.project
                                             }
                                         }
+                                    }).then(data => {
+                                        console.log(data.data.editActivity)
                                     })
                                 } else {
                                     alert("Окончание должно быть позже начала!")
@@ -208,7 +232,7 @@ const ActivityPage: FC = () => {
         </>
     );
 };
-export default ActivityPage;
+export default observer(ActivityPage);
 
 function canAddActivity(name: string) {
     return name.trim() != "";

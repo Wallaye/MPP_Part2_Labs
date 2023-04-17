@@ -1,6 +1,6 @@
 import React, {FC}from 'react';
 import {IActivity} from "../models/IActivity";
-import {toDate, getTimeDiff} from "../utility/Utils";
+import {toDate, getTimeDiff, DateToStringForInput} from "../utility/Utils";
 import {useParams} from "react-router-dom";
 
 interface ActivityItemProps {
@@ -13,8 +13,8 @@ const ActivityItem: FC<ActivityItemProps> = ({activity, onClick}) => {
         <tr className="table-hover" onClick={() => {onClick(activity)}}>
             <td>{activity.name}</td>
             <td>{activity.project ?? ""}</td>
-            <td>{toDate(activity.startDate)}</td>
-            <td>{toDate(activity.finishDate)}</td>
+            <td>{toDate(DateToStringForInput(activity.startDate))}</td>
+            <td>{activity.isFinished ? toDate(DateToStringForInput(activity.finishDate)) : "Ещё не завершено"}</td>
             <td>{activity.isFinished ? "Да" : "Нет"}</td>
             <td>{getTimeDiff(activity.startDate, activity.finishDate)}</td>
         </tr>
