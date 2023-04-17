@@ -3,11 +3,31 @@ import {Context} from "../index";
 import {observer} from "mobx-react-lite";
 import {useInput} from "../hooks/useInput";
 import "bootstrap/dist/css/bootstrap.css"
+import {useMutation} from "@apollo/client";
+import {LOGIN, REGISTRATION} from "../graphql/mutations/userMutations";
+import {onAuth, onError} from "../store/UserStore";
+import {IUser} from "../models/IUser";
+import {useNavigate} from "react-router-dom";
 
 const LoginForm: FC = () => {
     const {value: userName, onChange: setUserName} = useInput('');
     const {value: password, onChange: setPassword} = useInput('');
     const {userStore} = useContext(Context);
+    const navigate = useNavigate();
+
+    const [login] = useMutation(LOGIN, {
+        onCompleted: data => {
+            onAuth(data.login);
+        },
+        onError: onError
+    })
+
+    const [registration] = useMutation(REGISTRATION, {
+        onCompleted: data => {
+            onAuth(data.login)
+        },
+        onError: onError
+    })
 
     return (
         <>
@@ -39,12 +59,45 @@ const LoginForm: FC = () => {
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
                     <button className="btn btn-primary w-50" onClick={() => {
-                        userStore.login(userName, password)
+                        try {
+                            login({
+                                variables: {
+                                    input: {
+                                        userName: userName,
+                                        password: password
+                                    }
+                                }
+                            }).then(data => {
+                                console.log("success ", data)
+                                userStore.setAuth(true);
+                                userStore.setUser(data.data.login.user as IUser);
+                                navigate("/graphql/activities")
+                            })
+                        } catch (e: any) {
+                            console.log(e.response?.data?.message);
+                        }
                     }}>Логин
                     </button>
 
                     <button className="btn btn-success w-50" onClick={() => {
-                        userStore.registration(userName, password)
+
+                        try {
+                            registration({
+                                variables: {
+                                    authInput: {
+                                        userName: userName,
+                                        password: password
+                                    }
+                                }
+                            }).then(data => {
+                                userStore.setAuth(true);
+                                userStore.setUser(data.data.login.user as IUser);
+                                navigate("/graphql/activities")
+                            })
+                        } catch (e: any) {
+                            alert("Такой пользователь уже есть")
+                            console.log(e.response?.data?.message);
+                        }
                     }}>Регистрация
                     </button>
                 </div>

@@ -1,6 +1,5 @@
 import {IActivity} from "../models/IActivity";
 import {makeAutoObservable} from "mobx";
-import axios from "axios/index";
 import {AuthResponse} from "../models/response/AuthResponse";
 import {API_URL} from "../http";
 import ActivitiesService from "../services/activitiesService";

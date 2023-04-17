@@ -8,17 +8,7 @@ import ActivityItem from "./components/ActivityItem";
 import ActivityPage from "./pages/ActivityPage";
 
 const App: FC = () => {
-    const {userStore, actStore} = useContext(Context);
-
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-            userStore.checkIsAuth().then(
-                () => {
-                    actStore.getActivities()
-                }
-            );
-        }
-    }, [])
+    const {userStore} = useContext(Context);
 
     if (userStore.isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
@@ -26,16 +16,12 @@ const App: FC = () => {
         </div>
     }
 
-    if (!userStore.isAuth) {
-        return <LoginForm/>
-    }
-
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={'/api/'} element={<HomePage activities={actStore.activities}/>}></Route>
-                <Route path={'/api/activities'} element={<HomePage activities={actStore.activities}/>}></Route>
-                <Route path={'/api/activities/:id'} element={<ActivityPage />}></Route>
+                <Route path={'/graphql/auth'} element={<LoginForm />}></Route>
+                <Route path={'/graphql/activities'} element={<HomePage />}></Route>
+                <Route path={'/graphql/activities/:id'} element={<ActivityPage />}></Route>
             </Routes>
         </BrowserRouter>
     );
