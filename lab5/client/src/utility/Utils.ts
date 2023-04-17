@@ -1,4 +1,9 @@
 export function DateToStringForInput(str: number | string){
+    if (typeof str == "string"){
+        if (str.length == 16){
+             return str
+        }
+    }
     let time = new Date(+str);
     let year = time.getFullYear();
     let month = time.getMonth() + 1;
@@ -26,8 +31,8 @@ export const getTimeDiff = (_time1: string, _time2: string) => {
     if (_time2 == null){
         return "-";
     }
-    let date1 = new Date(+_time1);
-    let date2 = new Date(+_time2);
+    let date2 = new Date(DateToStringForInput(_time2));
+    let date1 = new Date(DateToStringForInput(_time1));
     let diff = date2.getTime() - date1.getTime()
     let date = new Date(diff);
     let year = date.getFullYear() - 1970;

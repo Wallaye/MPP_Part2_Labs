@@ -240,7 +240,7 @@ function canAddActivity(name: string) {
 
 function canSaveActivity(activity: IActivity): boolean {
     if (activity.name.trim() == "") return false;
-    const startDate = new Date(activity.startDate);
-    const finishDate = new Date(activity.finishDate);
+    const startDate = new Date(DateToStringForInput(activity.startDate));
+    const finishDate = new Date(DateToStringForInput(activity.finishDate));
     return startDate <= finishDate;
 }
