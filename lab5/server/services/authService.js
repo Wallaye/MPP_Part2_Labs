@@ -59,8 +59,6 @@ export async function refresh(refreshToken){
 export async function getUser(id){
     console.log(id);
     const user = await User.findById(id)
-    console.log("user", user);
     const userDto = new UserDto(user);
-    console.log("userDto", userDto);
     return {...userDto}
 }

@@ -6,6 +6,12 @@ import HomePage from "./pages/HomePage";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import ActivityItem from "./components/ActivityItem";
 import ActivityPage from "./pages/ActivityPage";
+import privateDecorator from "./components/privateDecorator";
+import PrivateContextLayout from "./components/privateDecorator";
+
+const loginFail = () => {
+    alert("SIIOO");
+}
 
 const App: FC = () => {
     const {userStore, actStore} = useContext(Context);
@@ -18,6 +24,10 @@ const App: FC = () => {
                 }
             );
         }
+    }, [])
+
+    useEffect(() => {
+        userStore.checkIsAuth()
     }, [])
 
     if (userStore.isLoading) {
@@ -33,9 +43,11 @@ const App: FC = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={'/api/'} element={<HomePage activities={actStore.activities}/>}></Route>
-                <Route path={'/api/activities'} element={<HomePage activities={actStore.activities}/>}></Route>
-                <Route path={'/api/activities/:id'} element={<ActivityPage />}></Route>
+                <Route path={'/graphql/auth'} element={<LoginForm/>}></Route>
+                <Route element={<PrivateContextLayout loginFail={loginFail}/>}>
+                    <Route path={'/graphql/activities'} element={<HomePage/>}></Route>
+                    <Route path={'/graphql/activities/:id'} element={<ActivityPage/>}></Route>
+                </Route>
             </Routes>
         </BrowserRouter>
     );

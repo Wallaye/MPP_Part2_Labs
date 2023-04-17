@@ -5,6 +5,10 @@ import {useNavigate, useParams} from "react-router-dom";
 import ActivitiesService from "../services/activitiesService";
 import NavBar from "../components/NavBar";
 import {Context} from "../index";
+import {useMutation, useQuery} from "@apollo/client";
+import {GET_ONE_ACTIVITY} from "../graphql/queries/activityQueries";
+import {ADD_ACTIVITY, DELETE_ACTIVITY, EDIT_ACTIVITY} from "../graphql/mutations/activityMutations";
+import {observer} from "mobx-react-lite";
 
 interface IError {
     status: number,
@@ -31,25 +35,41 @@ const ActivityPage: FC = () => {
         userName: userStore.user.userName
     })
 
-    useEffect(() => {
-        if (id != '-1') {
-            setLoading(true);
-            try {
-                ActivitiesService.getActivity(+id!).then(act => {
-                    setActivity(act.data);
-                    setFields(act.data)
-                    console.log(act.data);
-                }).catch(reason => {
-                    console.log(reason);
-                    setError({message: reason.response.data.message, status: reason.response.status})
-                });
-            } catch (e: any) {
-                setError({message: e.message, status: e.status});
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            setFields({...fields, startDate: DateToStringForInput(Date.now())})
+    const errorHandler = (error: any) => {
+        console.log(error)
+        setErr(error.networkError.result.message)
+    }
+
+    const {loading, refetch} = useQuery(GET_ONE_ACTIVITY, {
+        variables: {
+            id: +id!,
+            userName: userStore.user.userName
+        },
+        onCompleted: data => {
+            setFields({...data.getActivity});
+            setActivity(data.getActivity);
+        },
+        onError: errorHandler
+    })
+
+    const [addActivity] = useMutation(ADD_ACTIVITY, {
+        onError: errorHandler,
+        onCompleted: () => {
+            refetch()
+        }
+    })
+
+    const [deleteActivity] = useMutation(DELETE_ACTIVITY, {
+        onError: errorHandler,
+        onCompleted: () => {
+            navigate(-1)
+        }
+    })
+
+    const [editActivity] = useMutation(EDIT_ACTIVITY, {
+        onError: errorHandler,
+        onCompleted: () => {
+            refetch()
         }
     }, [])
 
@@ -58,9 +78,11 @@ const ActivityPage: FC = () => {
         setFields({...fields, [name]: value});
     }
 
-    useEffect(() => {
-        setActivity(activity)
-    })
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = event.target;
+        setFields({...fields, [name]: value});
+        console.log(fields.finishDate)
+    }
 
     if (isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
@@ -110,13 +132,13 @@ const ActivityPage: FC = () => {
                 <div className="form-group">
                     <label htmlFor="date">Дата и время начала:</label><br/>
                     <input type="datetime-local" name="startDate" value={DateToStringForInput(fields.startDate)}
-                           onChange={handleChange}/>
+                           onChange={handleDateChange}/>
                 </div>
 
                 {fields.isFinished && <div className="form-group">
                     <label htmlFor="date">Дата и время окончания:</label><br/>
                     <input type="datetime-local" name="finishDate" value={DateToStringForInput(fields.finishDate)}
-                           onChange={handleChange}/>
+                           onChange={handleDateChange}/>
                 </div>}
 
                 {(!fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
@@ -124,14 +146,24 @@ const ActivityPage: FC = () => {
                         setFields({...fields, isActive: true});
                         if (canAddActivity(fields.name)) {
                             console.log("Adding");
-                            ActivitiesService.addActivity({...fields, isActive: true}).then(activity => {
+                            addActivity({
+                                variables: {
+                                    actInput: {
+                                        name: fields.name,
+                                        isActive: true,
+                                        isFinished: false,
+                                        userName: fields.userName,
+                                        startDate: fields.startDate,
+                                        activityId: -1
+                                    }
+                                }
+                            }).then(activity => {
+                                console.log("activity after adding", activity);
                                 setFields({
-                                    ...fields,
-                                    isActive: true,
-                                    activityId: activity.data.activityId
-                                });
-                                navigate(`/api/activities/${activity.data.activityId}`)
-                            });
+                                    ...(activity.data.addActivity)
+                                })
+                                navigate(`/graphql/activities/${activity.data.addActivity.activityId}`)
+                            })
                         }
                     }}>Запустить</button>}
                 {(fields.isActive && !fields.isFinished && fields.name.trim() != "") &&
@@ -144,19 +176,48 @@ const ActivityPage: FC = () => {
                                     finishDate: DateToStringForInput(Date.now())
                                 })
                                 if (canAddActivity(fields.name)) {
-                                    ActivitiesService.saveActivity({
-                                        ...fields,
-                                        isFinished: true,
-                                        isActive: false,
-                                        finishDate: DateToStringForInput(Date.now())
-                                    }, userStore.user.userName);
+                                    console.log(userStore.user.userName, fields)
+                                    console.log({...fields})
+                                    editActivity({
+                                        variables: {
+                                            userName: userStore.user.userName,
+                                            actInput: {
+                                                activityId: fields.activityId,
+                                                name: fields.name,
+                                                description: fields.description,
+                                                isActive: false,
+                                                isFinished: true,
+                                                startDate: fields.startDate,
+                                                finishDate: DateToStringForInput(Date.now()),
+                                                userName: fields.userName,
+                                                project: fields.project
+                                            }
+                                        }
+                                    })
                                 }
                             }}>Завершить</button>}
                 {(!fields.isActive && fields.isFinished && fields.name.trim() != "") &&
                     <button className="btn btn-warning mt-2"
                             onClick={() => {
                                 if (canSaveActivity(fields)) {
-                                    ActivitiesService.saveActivity(fields, userStore.user.userName);
+                                    editActivity({
+                                        variables: {
+                                            userName: userStore.user.userName,
+                                            actInput: {
+                                                activityId: fields.activityId,
+                                                name: fields.name,
+                                                description: fields.description,
+                                                isActive: false,
+                                                isFinished: true,
+                                                startDate: fields.startDate,
+                                                finishDate: DateToStringForInput(Date.now()),
+                                                userName: fields.userName,
+                                                project: fields.project
+                                            }
+                                        }
+                                    }).then(data => {
+                                        console.log(data.data.editActivity)
+                                    })
                                 } else {
                                     alert("Окончание должно быть позже начала!")
                                 }
@@ -165,7 +226,7 @@ const ActivityPage: FC = () => {
         </>
     );
 };
-export default ActivityPage;
+export default observer(ActivityPage);
 
 function canAddActivity(name: string) {
     return name.trim() != "";
@@ -173,7 +234,7 @@ function canAddActivity(name: string) {
 
 function canSaveActivity(activity: IActivity): boolean {
     if (activity.name.trim() == "") return false;
-    const startDate = new Date(activity.startDate);
-    const finishDate = new Date(activity.finishDate);
+    const startDate = new Date(DateToStringForInput(activity.startDate));
+    const finishDate = new Date(DateToStringForInput(activity.finishDate));
     return startDate <= finishDate;
 }

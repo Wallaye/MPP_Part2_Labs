@@ -21,6 +21,7 @@ const userMutations = new graphql.GraphQLObjectType({
                 authInput: {type: new graphql.GraphQLNonNull(userInput)}
             },
             resolve: async (_, {authInput}) => {
+
                 return await AuthService.registration(authInput.userName, authInput.password);
             }
         },

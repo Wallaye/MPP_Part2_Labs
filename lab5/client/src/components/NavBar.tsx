@@ -20,17 +20,25 @@ const NavBar: FC<NavBarProps>= (props) => {
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
                     <li className="nav-item">
-                        <a className="nav-link" href="/api/activities/">Home</a>
+                        <button className="nav-link btn-outline-light border-0"
+                           onClick={() => {navigate("/graphql/activities/")}}
+                           >Home</button>
                     </li>
                 </ul>
             </div>
             <div className="my-2 my-lg-0">
                 <span className="mr-sm-2 text-black">{props.userName}</span>
                 <button onClick={() => {
-                    navigate('/api/activities/')
-                    userStore.logout();
-                    //actStore.setActivities([] as IActivity[])
-                }} className="btn btn-outline-danger my-2 my-sm-0">Выйти</button>
+                    try {
+                        userStore.logout(localStorage.getItem("refreshToken")!).then(data => {
+                            console.log(data)
+                        })
+                    } catch (e: any) {
+                        console.log(e.response?.data?.message);
+                    }
+                    navigate('/graphql/auth')
+                }} className="btn btn-outline-danger my-2 my-sm-0">Выйти
+                </button>
             </div>
         </nav>
     );

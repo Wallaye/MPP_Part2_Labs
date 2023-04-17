@@ -15,11 +15,33 @@ const HomePage: FC<HomePageProps> = ({activities}) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-            actStore.getActivities()
+        userStore.checkIsAuth().then(data => {
+            console.log("isAuth" + data);
+            if (!data){
+                navigate('/graphql/auth')
+            }
+        })
+    }, [])
+
+    const onErrorHandler = (err: any) => {
+        console.log(error)
+        setError(err.networkError.result.message)
+    }
+
+    const {loading} = useQuery(GET_ACTIVITIES, {
+        variables: {
+            userName: userStore.user.userName
+        },
+        onCompleted: data => {
+            setActivities(data.getActivities as IActivity[])
+        },
+        onError: err => {
+            console.log(err)
+            onErrorHandler(err)
         }
         , [actStore])
 
-    if (actStore.isLoading) {
+    if (loading || userStore.isLoading) {
         return <div className="align-self-center spinner-border text-primary" role="status">
             <span className="sr-only"></span>
         </div>
@@ -62,7 +84,7 @@ const HomePage: FC<HomePageProps> = ({activities}) => {
                     <tbody>
                     {activities.map(el =>
                         <ActivityItem key={el.activityId}
-                                      onClick={(el) => navigate('/api/activities/' + el.activityId)}
+                                      onClick={(el) => navigate('/graphql/activities/' + el.activityId)}
                                       activity={el}/>
                     )}
                     </tbody>
